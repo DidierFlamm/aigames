@@ -138,7 +138,7 @@ class TicTacToe(Game):
     def state_to_str(self, state: StateType) -> str:
         return "".join(state)
     
-    def print_state(self, state : StateType) -> None:
+    def print_state_from_str(self, state : str) -> None:
         
         
         print("\t╔═══╦═══╦═══╗")
@@ -154,7 +154,7 @@ class TicTacToe(Game):
         
         colored_state = [self.symbol_to_colored_symbol(case,players) for case in state]
         
-        return self.print_state(colored_state)
+        self.print_state_from_str(colored_state)
 
                    
     def early_pruning(self, state, depth, value, max_depth=None, reference_player=None):
@@ -200,7 +200,7 @@ class TicTacToePlus(TicTacToe):
         print("How to play:")
         print("- Choose a move by entering a number corresponding to the board position.")
         print("- Positions are numbered from left to right, top to bottom, as shown below:")
-        self.print_state(["7","8","9","4","5","6","1","2","3"])
+        self.print_state_from_str(["7","8","9","4","5","6","1","2","3"])
         print("- For example, '7' is the top-left cell, '3' is the bottom-right.")
         print("- Press [Enter] without typing anything to let the AI play for you.")
         print("- Type '?' or 'help' to display these instructions again.")
@@ -365,4 +365,5 @@ class TicTacToePlus(TicTacToe):
 
 if __name__ == "__main__":
     my_game = TicTacToePlus()        #use TicTacToe() instead of TicTacToePlus() for standard version 
-    my_game.start(log=True)
+    my_game.start(log=True)          #start and log game
+    my_game.replay()                 #choose your log to view replay

@@ -7,13 +7,10 @@ Created on Mon May 12 09:38:44 2025
 exemple : https://www.codingame.com/multiplayer/bot-programming/tic-tac-toe
  
 """
-#TODO: créer un script ai_algorithms.py pour stocker les minimax et d'autres (alphabeta, MCTS...) sous forme de fonction (minimax_decision, random_decision, MCTS_decision...) utilisées pour générer les bots 
-#TODO: DRY (Don’t Repeat Yourself) factoriser minimax_classique et selfish : code long et bcp de redondance dans les 2 méthodes
-#TODO: permettre List[str] ou Tuple[str, ...] dans get_winner() pour gérer des égalités multiples, si le jeu le permet.
-#TODO: créer version alpha beta du minimax: minimax_ab()
+
+#TODO: permettre List[str] ou Tuple[str, ...] dans get_winner() pour gérer des victoires multiples, si le jeu le permet.
+
 #TODO: créer replay_log() avec choix du filepath via une petite fenêtre graphique tkinter
-
-
 
 #TODO: créer 1_vs_all : self.all_against_ref_player = True + définir self.reference_player dans l'init de classe et le passer dans l'appel de best move : best_move = self.get_best_move(state=self.state, player=self.player, reference_player=self.reference_player, all_against_ref_player=self.all_against_ref_player, max_depth=max_depth) 
 #TODO: créer run_multi avec self.all_against_ref_player = False
@@ -29,6 +26,7 @@ import random
 from colorama import Fore, Style
 from player import PlayerManagerUI
 from minimax import Minimax
+from tkinter import Tk, filedialog
 
 #NB:
 #State a un type libre qui pourra être spécifié lors de la création d'une sous-classe
@@ -76,7 +74,7 @@ class Game(ABC, Generic[StateType]): #signifie que la classe Game est génériqu
         self.initial_state = deepcopy(initial_state)  
         self.starting_player = None
         self.all_against_ref_player = all_against_ref_player
-        self.reference_player= None            #TODO : à définir lors de la création des joueurs si self.all_against_ref == True
+        self.reference_player= None            # à définir lors de la création des joueurs pour les jeux multi avec self.all_against_ref == True
         self.max_depth = None                  # max_depth sera initialisé par la méthode start()
         self.log = None                        # log sera initialisé par la méthode start()
         self.nb_players = None                 # nb_players ne doit être défini que si le nb de players est imposé. Sinon, il doit rester None et sera géré par la méthode start() avec une variable locale
@@ -227,7 +225,7 @@ class Game(ABC, Generic[StateType]): #signifie que la classe Game est génériqu
 
     
     
-    def print_state(self, state : StateType) -> None:
+    def print_state_from_str(self, state_str : str) -> None:
         """
         Affiche de façon esthétique l'état du jeu.
         A adapter en fonction du jeu et de son StateType
@@ -235,18 +233,18 @@ class Game(ABC, Generic[StateType]): #signifie que la classe Game est génériqu
         Utilisé pour les replays (car players n'est pas accessible pour coloriser)
         """
         
-        state_str = self.state_to_str(state)
-        
         print(state_str)
         
     def print_colored_state(self, state, players) -> None:
         """ 
         Affiche l'état du jeu en colorisant les symboles selon la liste des players'
         Utilisé pendant le déroulement du jeu
-        Par défaut, renvoie print_state sans utiliser de couleur
+        Par défaut, transforme state en state_str et le print via print_state_from_str (sans utiliser de couleur)
         """
         
-        return self.print_state(state)
+        state_str = self.state_to_str(state)
+        
+        self.print_state_from_str(state_str)
         
 
     def print_help(self) -> None:
@@ -495,6 +493,7 @@ class Game(ABC, Generic[StateType]): #signifie que la classe Game est génériqu
         
         while True:   #boucle infinie sur les nouvelles parties (tant que l'utilisateur ne quitte pas)
             
+            start_time=None
             #log l'event start
             if self.log:
                 start_time = datetime.datetime.now()
@@ -506,7 +505,7 @@ class Game(ABC, Generic[StateType]): #signifie que la classe Game est génériqu
             #print le début de partie
             print("Game", self.game_number)
             print(f"{self.current_player.name} : {self.get_colored_symbol(self.current_player)} starts")
-            self.print_state(self.state)
+            self.print_colored_state(self.state, self.players)
             
             #boucle sur chaque tour d'une partie jusqu'à un état terminal
             while not self.is_terminal(self.state): 
@@ -603,6 +602,50 @@ class Game(ABC, Generic[StateType]): #signifie que la classe Game est génériqu
             json.dump(session_info, f, indent=2)
             
         print(f"💾 Game successfully saved to '{filename}'")
-
-
-
+        
+    def replay(self, file_path: str = None) -> None:
+        
+        #Load JSON from a given file path or via a file dialog if None.
+    
+    
+        if file_path and os.path.isfile(file_path):
+            path = file_path
+        else:
+            root = Tk()
+            root.withdraw()  # Ne pas afficher la fenêtre principale
+            path = filedialog.askopenfilename(
+                title="Choose JSON file",
+                filetypes=[("JSON files", "*.json")],
+            )
+            root.destroy()
+    
+        if path:
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    log = json.load(f)
+            except Exception as e:
+                print(f"[red]Error loading JSON file {path}: {e}[/red]")
+                return
+        else:
+            return
+        
+        filename = os.path.basename(path)
+        
+        print("File:", filename)
+        print("Game:", log["game_class"])
+        self.print_state_from_str(log["initial_state"])
+        print(f"\n{len(log["players"])} players:\n") 
+        for player in log['players']:
+            print("\t" + player['name'])
+            print("\t\tsymbol:", player['symbol'])
+            print("\t\tcolor:", player['color'])
+            print("\t\tbot: ", player['is_bot'],"\n")
+        print(log["total_games"],"games:")
+        for game in log['games']:
+            print("\n=== game", game["game_number"],"===\n")
+            for event in game["events"][1:-1]:
+                print("\t"+event["player"],"plays", event["action"])
+                self.print_state_from_str(event['state'])
+            print(f"\nwinner: {game["events"][-1]["winner"]}")
+            print(f"score: {game["score"]}")
+        print("\nFinal winner is", log["final_winner"])
