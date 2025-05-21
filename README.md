@@ -1,6 +1,6 @@
 # AIGames
 
-My package to build board games in Python and add AI bots with Minimax or other algorithms.
+My framework to develop solo or multiplayer games in Python, and design solvers or AI bots using algorithms like Backtracking, Pathfinding, Minimax, MCTS, or Neural Networks.
 
 ## Features
 
