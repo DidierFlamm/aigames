@@ -1,6 +1,6 @@
 # AIGames
 
-My framework to develop solo or multiplayer games in Python, and design solvers or AI bots using algorithms like Backtracking, Pathfinding, Minimax, MCTS, or Neural Networks.
+A Python framework to build solo or multiplayer perfect-information games, and design solvers or AI bots using algorithms like Backtracking, Pathfinding, Minimax, MCTS, or Neural Networks.
 
 ## Features
 
