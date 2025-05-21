@@ -1,0 +1,71 @@
+# === Python général ===
+__pycache__/
+*.py[cod]
+*.so
+*.pyd
+*.pyo
+
+# === Éditeurs ===
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# === OS spécifiques ===
+.DS_Store
+Thumbs.db
+
+# === Environnements virtuels ===
+env/
+venv/
+.venv/
+ENV/
+
+# === Fichiers de logs ou temporaires ===
+*.log
+*.tmp
+*.bak
+*.swp
+*.~*
+
+# === Tests / couverture ===
+htmlcov/
+.coverage
+.tox/
+nosetests.xml
+test-output/
+coverage.xml
+.cache/
+.pytest_cache/
+
+# === Distribution / packaging ===
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# === Jupyter Notebooks temporaires ===
+.ipynb_checkpoints/
+
+# === Secrets ou config locale ===
+.env
+.env.*
+*.ini
+*.cfg
+
+# === MyPy / Pylint / autres outils ===
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+
+# === VS Code local settings ===
+*.code-workspace
+
+# === le dossier game_logs/ créé pendant les tests ===
+game_logs/
+
+# === Ne pas ignorer ces fichiers de build ===
+!pyproject.toml
+!README.md
+!LICENSE
