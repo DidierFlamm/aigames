@@ -9,9 +9,6 @@ exemple : https://www.codingame.com/multiplayer/bot-programming/tic-tac-toe
 """
 
 #TODO: permettre List[str] ou Tuple[str, ...] dans get_winner() pour gérer des victoires multiples, si le jeu le permet.
-
-#TODO: créer replay_log() avec choix du filepath via une petite fenêtre graphique tkinter
-
 #TODO: créer 1_vs_all : self.all_against_ref_player = True + définir self.reference_player dans l'init de classe et le passer dans l'appel de best move : best_move = self.get_best_move(state=self.state, player=self.player, reference_player=self.reference_player, all_against_ref_player=self.all_against_ref_player, max_depth=max_depth) 
 #TODO: créer run_multi avec self.all_against_ref_player = False
 
@@ -28,18 +25,13 @@ from player import PlayerManagerUI
 from minimax import Minimax
 from tkinter import Tk, filedialog
 
-#NB:
-#State a un type libre qui pourra être spécifié lors de la création d'une sous-classe
+
+#NOTE: State a un type libre qui pourra être spécifié lors de la création d'une sous-classe
 StateType = TypeVar("StateType")
-#Move est de type string
 
 
 
-  
-
-    
-
-class Game(ABC, Generic[StateType]): #signifie que la classe Game est générique sur un type StateType
+class Game(ABC, Generic[StateType]): #signifie que la classe Game est générique sur le type StateType
     
     def __init__(self, initial_state: StateType, all_against_ref_player: bool):
         """
